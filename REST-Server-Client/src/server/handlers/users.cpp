@@ -89,10 +89,6 @@ crow::response UserHandler::create(const crow::request &req)
         phoneNumber = "";
     }
 
-
-    // Checks to see if the User Creating is an Admin, if so, allow them to edit Admin status, otherwise false.
-    bool isAdmin = json.has("isAdmin") ? json["isAdmin"].b() : false;
-
     // Locks so multiple requests can't modify the data.
     this->mutex_.lock();
 
