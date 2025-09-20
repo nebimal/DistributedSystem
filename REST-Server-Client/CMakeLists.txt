@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     src/server/handlers/base.cpp
     src/server/handlers/users.cpp
     src/server/handlers/products.cpp
+    src/server/handlers/orders.cpp
 )
 
 # Link Libraries

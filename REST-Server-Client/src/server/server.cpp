@@ -52,7 +52,7 @@ void Server::setup()
 {
     this->addHandler(std::make_shared<UserHandler>("/api/users"));
     this->addHandler(std::make_shared<ProductHandler>("/api/products"));
-    //this->addHandler(std::make_shared<OrderHandler>("/api/orders"));
+    this->addHandler(std::make_shared<OrderHandler>("/api/orders"));
 }
 
 void Server::addHandler(std::shared_ptr<IHandler> handler)
