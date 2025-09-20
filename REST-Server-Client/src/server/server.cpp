@@ -51,7 +51,7 @@ Server::Server(const ServerConfig &config) : config_(config)
 void Server::setup()
 {
     this->addHandler(std::make_shared<UserHandler>("/api/users"));
-   // this->addHandler(std::make_shared<ProductHandler>("/api/products"));
+    this->addHandler(std::make_shared<ProductHandler>("/api/products"));
     //this->addHandler(std::make_shared<OrderHandler>("/api/orders"));
 }
 

@@ -89,6 +89,8 @@ crow::response UserHandler::create(const crow::request &req)
         phoneNumber = "";
     }
 
+    bool isAdmin = false;
+
     // Locks so multiple requests can't modify the data.
     this->mutex_.lock();
 
