@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package ecommerce;
+
+// User Service
+service UserService {
+  rpc RegisterUser(User) returns (UserResponse);
+  rpc LoginUser(LoginRequest) returns (UserResponse);
+  rpc GetUser(UserRequest) returns (User);
+}
+
+message User {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  string first_name = 5;
+  string last_name = 6;
+  string address = 7;
+  string phone = 8;
+  bool is_admin = 9;
+}
+
+message UserRequest {
+  string user_id = 1;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message UserResponse {
+  bool success = 1;
+  string message = 2;
+  User user = 3;
+}
+
+// Product Service
+service ProductService {
+  rpc GetProduct(ProductRequest) returns (Product);
+  rpc GetAllProducts(Empty) returns (ProductList);
+  rpc AddProduct(Product) returns (ProductResponse);
+  rpc UpdateProduct(Product) returns (ProductResponse);
+}
+
+message Product {
+  string product_id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 stock = 5;
+  string category = 6;
+  string image_url = 7;
+}
+
+message ProductRequest {
+  string product_id = 1;
+}
+
+message ProductList {
+  repeated Product products = 1;
+}
+
+message ProductResponse {
+  bool success = 1;
+  string message = 2;
+  Product product = 3;
+}
+
+// Order Service
+service OrderService {
+  rpc CreateOrder(Order) returns (OrderResponse);
+  rpc GetOrder(OrderRequest) returns (Order);
+  rpc GetUserOrders(UserOrdersRequest) returns (OrderList);
+  rpc UpdateOrderStatus(OrderStatusUpdate) returns (OrderResponse);
+}
+
+message Order {
+  string order_id = 1;
+  string user_id = 2;
+  repeated OrderItem items = 3;
+  double total_amount = 4;
+  string status = 5; // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  string shipping_address = 6;
+  string payment_method = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message OrderItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message UserOrdersRequest {
+  string user_id = 1;
+}
+
+message OrderStatusUpdate {
+  string order_id = 1;
+  string status = 2;
+}
+
+message OrderList {
+  repeated Order orders = 1;
+}
+
+message OrderResponse {
+  bool success = 1;
+  string message = 2;
+  Order order = 3;
+}
+
+// Cart Service
+service CartService {
+  rpc AddToCart(CartItem) returns (CartResponse);
+  rpc GetCart(CartRequest) returns (Cart);
+  rpc RemoveFromCart(CartItem) returns (CartResponse);
+  rpc ClearCart(CartRequest) returns (CartResponse);
+}
+
+message Cart {
+  string user_id = 1;
+  repeated CartItem items = 2;
+  double total_amount = 3;
+}
+
+message CartItem {
+  string user_id = 1;
+  string product_id = 2;
+  string product_name = 3;
+  int32 quantity = 4;
+  double price = 5;
+}
+
+message CartRequest {
+  string user_id = 1;
+}
+
+message CartResponse {
+  bool success = 1;
+  string message = 2;
+  Cart cart = 3;
+}
+
+// Common
+message Empty {}
