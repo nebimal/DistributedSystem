@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package order;
+import "common.proto";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (OrderResponse);
+  rpc GetOrder(OrderRequest) returns (OrderResponse);
+  rpc GetUserOrders(UserOrdersRequest) returns (UserOrdersResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (OrderResponse);
+  rpc CancelOrder(OrderRequest) returns (common.StatusResponse);
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  repeated OrderItem items = 2;
+  string shipping_address = 3;
+  string payment_method = 4;
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message UserOrdersRequest {
+  string user_id = 1;
+  common.Pagination pagination = 2;
+}
+
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  OrderStatus status = 2;
+}
+
+message OrderItem {
+  string product_id = 1;
+  string name = 2;
+  double price = 3;
+  int32 quantity = 4;
+}
+
+message OrderResponse {
+  string order_id = 1;
+  string user_id = 2;
+  repeated OrderItem items = 3;
+  double total_amount = 4;
+  OrderStatus status = 5;
+  string shipping_address = 6;
+  string payment_method = 7;
+  string created_at = 8;
+  string updated_at = 9;
+  string tracking_number = 10;
+}
+
+message UserOrdersResponse {
+  repeated OrderResponse orders = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+enum OrderStatus {
+  PENDING = 0;
+  CONFIRMED = 1;
+  PROCESSING = 2;
+  SHIPPED = 3;
+  DELIVERED = 4;
+  CANCELLED = 5;
+}

@@ -1,21 +1,12 @@
 FROM python:3.9-slim
 
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
+WORKDIR /admin_service
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-COPY ../proto/ ./proto/
-RUN python -m grpc_tools.protoc \
-    -I./proto \
-    --python_out=. \
-    --grpc_python_out=. \
-    ./proto/ecommerce.proto
+COPY . .
+RUN python -m grpc_tools.protoc -I../protos --python_out=. --grpc_python_out=. ../protos/admin_service.proto ../protos/common.proto
 
-COPY src/ ./src/
 
-EXPOSE 50051
-
-CMD ["python", "src/admin_server.py"]
+CMD ["python", "service.py"]

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package common;
+
+message StatusResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message Pagination {
+  int32 page = 1;
+  int32 limit = 2;
+}

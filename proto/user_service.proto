@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package user;
+import "common.proto";
+
+service UserService {
+  rpc RegisterUser(UserRegistrationRequest) returns (UserResponse);
+  rpc GetUser(UserRequest) returns (UserResponse);
+  rpc AuthenticateUser(AuthRequest) returns (AuthResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+}
+
+message UserRegistrationRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string first_name = 4;
+  string last_name = 5;
+  string phone = 6;
+  string address = 7;
+}
+
+message UserRequest {
+  string user_id = 1;
+}
+
+message AuthRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  bool success = 1;
+  string token = 2;
+  string user_id = 3;
+  string message = 4;
+}
+
+message UserResponse {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string first_name = 4;
+  string last_name = 5;
+  string phone = 6;
+  string address = 7;
+  string created_at = 8;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone = 5;
+  string address = 6;
+}
