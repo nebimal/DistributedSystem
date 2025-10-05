@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package product;
-import "common.proto";
 
 service ProductService {
   rpc GetProduct(ProductRequest) returns (ProductResponse);
@@ -15,8 +14,9 @@ message ProductRequest {
 }
 
 message ProductListRequest {
-  common.Pagination pagination = 1;
-  string category = 2;
+  int32 page = 1;
+  int32 limit = 2;
+  string category = 3;
 }
 
 message CreateProductRequest {
@@ -46,8 +46,8 @@ message ProductResponse {
   int32 stock = 5;
   string category = 6;
   string image_url = 7;
-  string created_at = 8;
-  string updated_at = 9;
+  string status = 8;
+  string message = 9;
 }
 
 message ProductListResponse {
