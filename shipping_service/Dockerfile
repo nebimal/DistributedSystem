@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY *.py ./
 COPY *.proto ./
 
-RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. *.proto
+#RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. *.proto
 
 EXPOSE 50055
 
