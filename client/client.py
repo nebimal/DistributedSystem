@@ -3,7 +3,7 @@ import sys
 import os
 
 # Add protos to path
-sys.path.append('../protos')
+sys.path.append('../proto')
 
 import user_pb2
 import user_pb2_grpc
