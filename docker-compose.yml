@@ -1,61 +1,57 @@
 version: '3.8'
 
 services:
-  user-service:
+  user_service:
     build: ./user_service
     ports:
       - "50051:50051"
     networks:
-      - ecommerce-network
+      - ecommerce_network
 
-  product-service:
+  product_service:
     build: ./product_service
     ports:
       - "50052:50052"
     networks:
-      - ecommerce-network
+      - ecommerce_network
 
-  cart-service:
-    build: ./cart_service
-    ports:
-      - "50053:50053"
-    depends_on:
-      - product-service
-    networks:
-      - ecommerce-network
-
-  order-service:
+  order_service:
     build: ./order_service
     ports:
-      - "50054:50054"
-    depends_on:
-      - cart-service
-      - product-service
+      - "50053:50053"
     networks:
-      - ecommerce-network
+      - ecommerce_network
+    depends_on:
+      - user_service
+      - product_service
 
-  admin-service:
-    build: ./admin_service
+  payment_service:
+    build: ./payment_service
+    ports:
+      - "50054:50054"
+    networks:
+      - ecommerce_network
+
+  shipping_service:
+    build: ./shipping_service
     ports:
       - "50055:50055"
-    depends_on:
-      - order-service
-      - product-service
     networks:
-      - ecommerce-network
+      - ecommerce_network
 
-  api-gateway:
-    build: ./gateway
-    ports:
-      - "8000:8000"
-    depends_on:
-      - user-service
-      - product-service
-      - cart-service
-      - order-service
+  client:
+    build: ./client
     networks:
-      - ecommerce-network
+      - ecommerce_network
+    depends_on:
+      - user_service
+      - product_service
+      - order_service
+      - payment_service
+      - shipping_service
+    stdin_open: true
+    tty: true
 
 networks:
-  ecommerce-network:
+  ecommerce_network:
     driver: bridge

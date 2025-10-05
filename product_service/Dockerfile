@@ -3,11 +3,13 @@ FROM python:3.9-slim
 WORKDIR /product_service
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-RUN python -m grpc_tools.protoc -I../proto --python_out=. --grpc_python_out=. ../proto/product_service.proto ../proto/common.proto
+COPY *.py ./
+COPY *.proto ./
+
+RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. *.proto
 
 EXPOSE 50052
 
-CMD ["python", "service.py"]
+CMD ["python", "product_server.py"]
