@@ -188,20 +188,20 @@ void ProductHandler::registerRoutes(App &app)
     // Searches and call the Handler for that Enpdpoint/Method.
 
     // GET, Lists all the Products
-    app.route_dynamic(this->basePath_)
+    app.route_dynamic(this->basePath_ + "")
         .methods(crow::HTTPMethod::GET)(
             [this](const crow::request &req)
             {
                 return this->list(req);
             });
     
-    /* GET, Lists an individual Product
+    // GET, Lists an individual Product
     app.route_dynamic(this->basePath_ + "/<int>")
         .methods(crow::HTTPMethod::GET)(
             [this](const crow::request &req, int id)
             {
                 return this->get(id);
-            });*/
+            });
 
   /* POST, Creates a Product
     app.route_dynamic(this->basePath_)

@@ -188,7 +188,7 @@ void OrderHandler::registerRoutes(App &app)
     // Searches and call the Handler for that Enpdpoint/Method.
 
     // GET, Lists all the Orders (ADMIN Only)
-    app.route_dynamic(this->basePath_)
+    app.route_dynamic(this->basePath_ + "")
         .methods(crow::HTTPMethod::GET)(
             [this](const crow::request &req)
             {
@@ -204,7 +204,7 @@ void OrderHandler::registerRoutes(App &app)
             });
 
     // POST, Places an Order
-    app.route_dynamic(this->basePath_)
+    app.route_dynamic(this->basePath_ + "")
         .methods(crow::HTTPMethod::POST)(
             [this](const crow::request &req)
             {

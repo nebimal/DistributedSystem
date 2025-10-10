@@ -188,7 +188,7 @@ void UserHandler::registerRoutes(App &app)
             });*/
 
     // POST, Creates a User
-    app.route_dynamic(this->basePath_)
+    app.route_dynamic(this->basePath_ + "")
         .methods(crow::HTTPMethod::POST)(
             [this](const crow::request &req)
             {
