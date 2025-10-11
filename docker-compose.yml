@@ -6,21 +6,21 @@ services:
     ports:
       - "50051:50051"
     networks:
-      - grpc_network
+      - ecommerce_network
 
   product_service:
     build: ./product_service
     ports:
       - "50052:50052"
     networks:
-      - grpc_network
+      - ecommerce_network
 
   order_service:
     build: ./order_service
     ports:
       - "50053:50053"
     networks:
-      - grpc_network
+      - ecommerce_network
     depends_on:
       - user_service
       - product_service
@@ -30,19 +30,19 @@ services:
     ports:
       - "50054:50054"
     networks:
-      - grpc_network
+      - ecommerce_network
 
   shipping_service:
     build: ./shipping_service
     ports:
       - "50055:50055"
     networks:
-      - grpc_network
+      - ecommerce_network
 
   client:
     build: ./client
     networks:
-      - grpc_network
+      - ecommerce_network
     depends_on:
       - user_service
       - product_service
@@ -53,5 +53,5 @@ services:
     tty: true
 
 networks:
-  grpc_network:
+  ecommerce_network:
     driver: bridge

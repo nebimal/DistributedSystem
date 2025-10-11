@@ -6,10 +6,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY *.py ./
+#COPY *.py /drives/c/users/yemil/distributed-systems/project-2/DistributedSystem/generated 
 COPY *.proto ./
 
-#RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. user.proto
+RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. user.proto
 
 EXPOSE 50051
 
-CMD ["python", "user_server.py"]
+CMD ["python3", "user_server.py"]

@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 def generate_proto_files():
-    proto_dir = "proto"
+    proto_dir = "protos"
     services = ["user", "product", "order", "payment", "shipping"]
     
     for service in services:
