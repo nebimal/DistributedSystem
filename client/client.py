@@ -4,15 +4,15 @@ import os
 
 # Add protos to path
 sys.path.append('../protos')
-<<<<<<< HEAD
-=======
+#<<<<<<< HEAD
+#=======
 sys.path.append('../user_service')
 sys.path.append('../product_service')
 sys.path.append('../order_service')
 sys.path.append('../payment_service')
 sys.path.append('../shipping_service')
 
->>>>>>> b8d41ee (Servers and client up and running)
+#>>>>>>> b8d41ee (Servers and client up and running)
 
 import user_pb2
 import user_pb2_grpc
