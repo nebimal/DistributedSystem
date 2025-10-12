@@ -1,204 +1,172 @@
 import grpc
 from concurrent import futures
-#from grpc_reflection.v1alpha import reflection
-
 import uuid
-from datetime import datetime
 from threading import Lock
+
 import product_pb2
 import product_pb2_grpc
 
-import order_pb2
-import order_pb2_grpc
-
-class OrderService(order_pb2_grpc.OrderServiceServicer):
+class ProductService(product_pb2_grpc.ProductServiceServicer):
     def __init__(self):
-        self.orders = {}
+        self.products = {}
         self.lock = Lock()
+        self._add_sample_products()
     
-    def CreateOrder(self, request, context):
-        with self.lock:
-            order_id = str(uuid.uuid4())
-            total_amount = sum(item.quantity * item.price for item in request.items)
-            
-            new_order = {
-                "order_id": order_id,
-                "user_id": request.user_id,
-                "items": [
-                    {
-                        "product_id": item.product_id,
-                        "quantity": item.quantity,
-                        "price": item.price
-                    } for item in request.items
-                ],
-                "total_amount": total_amount,
-                "status": "pending",
-                "shipping_address": request.shipping_address,
-                "payment_method": request.payment_method,
-                "created_at": datetime.now().isoformat(),
-                "updated_at": datetime.now().isoformat()
+    def _add_sample_products(self):
+        sample_products = [
+            {
+                "product_id": "1",
+                "name": "Laptop",
+                "description": "High-performance laptop",
+                "price": 999.99,
+                "stock": 10,
+                "category": "Electronics",
+                "image_url": "https://example.com/laptop.jpg"
+            },
+            {
+                "product_id": "2",
+                "name": "Smartphone",
+                "description": "Latest smartphone model",
+                "price": 699.99,
+                "stock": 25,
+                "category": "Electronics",
+                "image_url": "https://example.com/phone.jpg"
+            },
+            {
+                "product_id": "3",
+                "name": "Headphones",
+                "description": "Wireless noise-cancelling headphones",
+                "price": 199.99,
+                "stock": 50,
+                "category": "Electronics",
+                "image_url": "https://example.com/headphones.jpg"
             }
-            
-            self.orders[order_id] = new_order
-            
-            return order_pb2.OrderResponse(
-                order_id=order_id,
-                user_id=request.user_id,
-                items=request.items,
-                total_amount=total_amount,
-                status="pending",
-                shipping_address=request.shipping_address,
-                payment_method=request.payment_method,
-                created_at=new_order["created_at"],
-                updated_at=new_order["updated_at"],
-                message="Order created successfully"
-            )
+        ]
+        
+        for product in sample_products:
+            self.products[product["product_id"]] = product
     
-    def GetOrder(self, request, context):
-        order = self.orders.get(request.order_id)
-        if order:
-            order_items = [
-                order_pb2.OrderItem(
-                    product_id=item["product_id"],
-                    quantity=item["quantity"],
-                    price=item["price"]
-                ) for item in order["items"]
-            ]
-            
-            return order_pb2.OrderResponse(
-                order_id=order["order_id"],
-                user_id=order["user_id"],
-                items=order_items,
-                total_amount=order["total_amount"],
-                status=order["status"],
-                shipping_address=order["shipping_address"],
-                payment_method=order["payment_method"],
-                created_at=order["created_at"],
-                updated_at=order["updated_at"],
-                message="Order found"
+    def GetProduct(self, request, context):
+        product = self.products.get(request.product_id)
+        if product:
+            return product_pb2.ProductResponse(
+                product_id=product["product_id"],
+                name=product["name"],
+                description=product["description"],
+                price=product["price"],
+                stock=product["stock"],
+                category=product["category"],
+                image_url=product["image_url"],
+                status="success",
+                message="Product found"
             )
         else:
-            return order_pb2.OrderResponse(
-                message="Order not found"
+            return product_pb2.ProductResponse(
+                status="error",
+                message="Product not found"
             )
     
-    def GetUserOrders(self, request, context):
-        user_orders = []
-        for order in self.orders.values():
-            if order["user_id"] == request.user_id:
-                user_orders.append(order)
-        
+    def ListProducts(self, request, context):
         page = request.page if request.page > 0 else 1
         limit = request.limit if request.limit > 0 else 10
+        category = request.category
         
+        filtered_products = []
+        for product in self.products.values():
+            if not category or product["category"] == category:
+                filtered_products.append(product)
+        
+        # Pagination
         start_idx = (page - 1) * limit
         end_idx = start_idx + limit
-        paginated_orders = user_orders[start_idx:end_idx]
+        paginated_products = filtered_products[start_idx:end_idx]
         
-        order_responses = []
-        for order in paginated_orders:
-            order_items = [
-                order_pb2.OrderItem(
-                    product_id=item["product_id"],
-                    quantity=item["quantity"],
-                    price=item["price"]
-                ) for item in order["items"]
-            ]
-            
-            order_responses.append(order_pb2.OrderResponse(
-                order_id=order["order_id"],
-                user_id=order["user_id"],
-                items=order_items,
-                total_amount=order["total_amount"],
-                status=order["status"],
-                shipping_address=order["shipping_address"],
-                payment_method=order["payment_method"],
-                created_at=order["created_at"],
-                updated_at=order["updated_at"]
+        product_responses = []
+        for product in paginated_products:
+            product_responses.append(product_pb2.ProductResponse(
+                product_id=product["product_id"],
+                name=product["name"],
+                description=product["description"],
+                price=product["price"],
+                stock=product["stock"],
+                category=product["category"],
+                image_url=product["image_url"]
             ))
         
-        return order_pb2.UserOrdersResponse(
-            orders=order_responses,
-            total=len(user_orders),
+        return product_pb2.ProductListResponse(
+            products=product_responses,
+            total=len(filtered_products),
             page=page,
             limit=limit
         )
     
-    def UpdateOrderStatus(self, request, context):
+    def CreateProduct(self, request, context):
         with self.lock:
-            order = self.orders.get(request.order_id)
-            if order:
-                order["status"] = request.status
-                order["updated_at"] = datetime.now().isoformat()
-                
-                order_items = [
-                    order_pb2.OrderItem(
-                        product_id=item["product_id"],
-                        quantity=item["quantity"],
-                        price=item["price"]
-                    ) for item in order["items"]
-                ]
-                
-                return order_pb2.OrderResponse(
-                    order_id=order["order_id"],
-                    user_id=order["user_id"],
-                    items=order_items,
-                    total_amount=order["total_amount"],
-                    status=order["status"],
-                    shipping_address=order["shipping_address"],
-                    payment_method=order["payment_method"],
-                    created_at=order["created_at"],
-                    updated_at=order["updated_at"],
-                    message="Order status updated successfully"
-                )
-            else:
-                return order_pb2.OrderResponse(
-                    message="Order not found"
-                )
+            product_id = str(uuid.uuid4())
+            new_product = {
+                "product_id": product_id,
+                "name": request.name,
+                "description": request.description,
+                "price": request.price,
+                "stock": request.stock,
+                "category": request.category,
+                "image_url": request.image_url
+            }
+            
+            self.products[product_id] = new_product
+            
+            return product_pb2.ProductResponse(
+                product_id=product_id,
+                name=request.name,
+                description=request.description,
+                price=request.price,
+                stock=request.stock,
+                category=request.category,
+                image_url=request.image_url,
+                status="success",
+                message="Product created successfully"
+            )
     
-    def CancelOrder(self, request, context):
+    def UpdateProduct(self, request, context):
         with self.lock:
-            order = self.orders.get(request.order_id)
-            if order and order["user_id"] == request.user_id:
-                if order["status"] in ["pending", "confirmed"]:
-                    order["status"] = "cancelled"
-                    order["updated_at"] = datetime.now().isoformat()
-                    
-                    order_items = [
-                        order_pb2.OrderItem(
-                            product_id=item["product_id"],
-                            quantity=item["quantity"],
-                            price=item["price"]
-                        ) for item in order["items"]
-                    ]
-                    
-                    return order_pb2.OrderResponse(
-                        order_id=order["order_id"],
-                        user_id=order["user_id"],
-                        items=order_items,
-                        total_amount=order["total_amount"],
-                        status=order["status"],
-                        shipping_address=order["shipping_address"],
-                        payment_method=order["payment_method"],
-                        created_at=order["created_at"],
-                        updated_at=order["updated_at"],
-                        message="Order cancelled successfully"
-                    )
-                else:
-                    return order_pb2.OrderResponse(
-                        message="Cannot cancel order in current status"
-                    )
+            product = self.products.get(request.product_id)
+            if product:
+                if request.name:
+                    product["name"] = request.name
+                if request.description:
+                    product["description"] = request.description
+                if request.price > 0:
+                    product["price"] = request.price
+                if request.stock >= 0:
+                    product["stock"] = request.stock
+                if request.category:
+                    product["category"] = request.category
+                if request.image_url:
+                    product["image_url"] = request.image_url
+                
+                return product_pb2.ProductResponse(
+                    product_id=product["product_id"],
+                    name=product["name"],
+                    description=product["description"],
+                    price=product["price"],
+                    stock=product["stock"],
+                    category=product["category"],
+                    image_url=product["image_url"],
+                    status="success",
+                    message="Product updated successfully"
+                )
             else:
-                return order_pb2.OrderResponse(
-                    message="Order not found or unauthorized"
+                return product_pb2.ProductResponse(
+                    status="error",
+                    message="Product not found"
                 )
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    order_pb2_grpc.add_OrderServiceServicer_to_server(OrderService(), server)
-    server.add_insecure_port('[::]:50053')
+    product_pb2_grpc.add_ProductServiceServicer_to_server(ProductService(), server)
+    server.add_insecure_port('[::]:50052')
     server.start()
-    print("Order Service running on port 50053")
+    print("Product Service running on port 50052")
     server.wait_for_termination()
 
 if __name__ == '__main__':

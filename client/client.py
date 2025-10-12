@@ -4,6 +4,15 @@ import os
 
 # Add protos to path
 sys.path.append('../protos')
+<<<<<<< HEAD
+=======
+sys.path.append('../user_service')
+sys.path.append('../product_service')
+sys.path.append('../order_service')
+sys.path.append('../payment_service')
+sys.path.append('../shipping_service')
+
+>>>>>>> b8d41ee (Servers and client up and running)
 
 import user_pb2
 import user_pb2_grpc
@@ -23,6 +32,13 @@ class ECommerceClient:
         self.order_channel = grpc.insecure_channel('order_service:50053')
         self.payment_channel = grpc.insecure_channel('payment_service:50054')
         self.shipping_channel = grpc.insecure_channel('shipping_service:50055')
+
+	#self.user_channel = grpc.insecure_channel('localhost:50051')
+        #self.product_channel = grpc.insecure_channel('localhost:50052')
+	#self.order_channel = grpc.insecure_channel('localhost:50053')
+	#self.payment_channel = grpc.insecure_channel('localhost:50054')
+	#self.shipping_channel = grpc.insecure_channel('localhost:50055')
+
         
         self.user_stub = user_pb2_grpc.UserServiceStub(self.user_channel)
         self.product_stub = product_pb2_grpc.ProductServiceStub(self.product_channel)
