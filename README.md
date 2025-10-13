@@ -24,7 +24,7 @@ To execute either implementation:
 
 1. Navigate to the corresponding project folder:  
    - `cd REST-Server-Client`  
-   - `cd MicroService-gRPC`  
+   - `cd ecommerce-order-system`  
 
 2. Open the respective `README.md` file inside that folder.  
    Each README provides detailed steps to **build, run, and test** the system.
